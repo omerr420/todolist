@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const API_URL = 'http://localhost:3001'; // yoldaşının verdiyi əsl port ilə əvəz et
+const API_URL = 'http://localhost:3001'; // Elvinin verdiyi əsl port ilə əvəz et
 
 function getDeadlineStatus(deadline) {
   if (!deadline) return null;
@@ -32,9 +32,9 @@ function TodoApp() {
   const [editingId, setEditingId] = useState(null);
   const [editTitle, setEditTitle] = useState('');
   const [editDeadline, setEditDeadline] = useState('');
-  const [toast, setToast] = useState(null); // { message, type }
-  const [filter, setFilter] = useState('all'); // all | active | completed | overdue
-  const [sortBy, setSortBy] = useState('none'); // none | deadline
+  const [toast, setToast] = useState(null); 
+  const [filter, setFilter] = useState('all'); 
+  const [sortBy, setSortBy] = useState('none'); 
 
   const authHeaders = {
     'Content-Type': 'application/json',
