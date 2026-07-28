@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 
-const API_URL = 'http://localhost:3001'; // yoldaşının verdiyi əsl port ilə əvəz et
+const API_URL = 'http://localhost:3001'; // Elvinin verdiyi əsl port ilə əvəz et
 
 function Login() {
   const [email, setEmail] = useState('');
@@ -29,12 +29,11 @@ function Login() {
         return;
       }
 
-      // token və istifadəçi məlumatını saxlayırıq
       localStorage.setItem('token', data.data.token);
       localStorage.setItem('currentUser', JSON.stringify(data.data.user));
 
       navigate('/todos');
-    } catch (err) {
+    } catch  {
       setError('Serverə qoşulmaq mümkün olmadı');
     } finally {
       setLoading(false);

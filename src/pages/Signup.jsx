@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 
-const API_URL = 'http://localhost:3001'; // yoldaşının verdiyi əsl port ilə əvəz et
+const API_URL = 'http://localhost:3001'; // Elvinin verdiyi əsl port ilə əvəz et
 
 function Signup() {
   const [name, setName] = useState('');
@@ -35,9 +35,8 @@ function Signup() {
         return;
       }
 
-      // register uğurlu oldu, indi login səhifəsinə yönləndiririk
       navigate('/login');
-    } catch (err) {
+    } catch {
       setError('Serverə qoşulmaq mümkün olmadı');
     } finally {
       setLoading(false);
