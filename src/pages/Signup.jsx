@@ -1,14 +1,17 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 
+const API_URL = 'http://localhost:3001'; // yoldaşının verdiyi əsl port ilə əvəz et
+
 function Signup() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
@@ -17,19 +20,28 @@ function Signup() {
       return;
     }
 
-    const users = JSON.parse(localStorage.getItem('users') || '[]');
-    const exists = users.find(u => u.email === email);
-    if (exists) {
-      setError('Bu email artıq qeydiyyatdan keçib');
-      return;
+    setLoading(true);
+    try {
+      const res = await fetch(`${API_URL}/api/auth/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, password }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        setError(data.error?.message || 'Qeydiyyat uğursuz oldu');
+        return;
+      }
+
+      // register uğurlu oldu, indi login səhifəsinə yönləndiririk
+      navigate('/login');
+    } catch (err) {
+      setError('Serverə qoşulmaq mümkün olmadı');
+    } finally {
+      setLoading(false);
     }
-
-    const newUser = { name, email, password };
-    users.push(newUser);
-    localStorage.setItem('users', JSON.stringify(users));
-    localStorage.setItem('currentUser', JSON.stringify(newUser));
-
-    navigate('/todos');
   };
 
   return (
@@ -55,7 +67,9 @@ function Signup() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <button type="submit">Qeydiyyatdan keç</button>
+        <button type="submit" disabled={loading}>
+          {loading ? 'Göndərilir...' : 'Qeydiyyatdan keç'}
+        </button>
         <p>
           Artıq hesabın var? <Link to="/login">Daxil ol</Link>
         </p>

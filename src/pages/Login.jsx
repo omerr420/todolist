@@ -1,26 +1,44 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 
+const API_URL = 'http://localhost:3001'; // yoldaşının verdiyi əsl port ilə əvəz et
+
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setLoading(true);
 
-    const users = JSON.parse(localStorage.getItem('users') || '[]');
-    const user = users.find(u => u.email === email && u.password === password);
+    try {
+      const res = await fetch(`${API_URL}/api/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
 
-    if (!user) {
-      setError('Email və ya şifrə yanlışdır');
-      return;
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        setError(data.error?.message || 'Email və ya şifrə yanlışdır');
+        return;
+      }
+
+      // token və istifadəçi məlumatını saxlayırıq
+      localStorage.setItem('token', data.data.token);
+      localStorage.setItem('currentUser', JSON.stringify(data.data.user));
+
+      navigate('/todos');
+    } catch (err) {
+      setError('Serverə qoşulmaq mümkün olmadı');
+    } finally {
+      setLoading(false);
     }
-
-    localStorage.setItem('currentUser', JSON.stringify(user));
-    navigate('/todos');
   };
 
   return (
@@ -40,7 +58,9 @@ function Login() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <button type="submit">Daxil ol</button>
+        <button type="submit" disabled={loading}>
+          {loading ? 'Göndərilir...' : 'Daxil ol'}
+        </button>
         <p>
           Hesabın yoxdur? <Link to="/signup">Qeydiyyatdan keç</Link>
         </p>
